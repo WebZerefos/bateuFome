@@ -1,18 +1,30 @@
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import Feather from '@expo/vector-icons/Feather'
 import { themeColors } from '../theme'
 import DishRow from '../components/DishRow'
-import CardIcon from '../components/CardIcon'
+import CartIcon from '../components/CartIcon'
 import { StatusBar } from 'expo-status-bar'
+import { useNavigation } from '@react-navigation/native'
+import { useDispatch } from 'react-redux'
+import { setRestaurant } from '../slices/restaurantSlice'
 
-const RestaurantScreen = ({ route, navigation }) => {
+const RestaurantScreen = ({ route }) => {
 	const { restaurant } = route.params
+	const navigation = useNavigation()
+
+	const dispatch = useDispatch()
+
+	useEffect(() => {
+		if (restaurant && restaurant.id) {
+			dispatch(setRestaurant({ ...restaurant }))
+		}
+	}, [])
 
 	return (
 		<View>
 			<StatusBar style='light' />
-			<CardIcon />
+			<CartIcon />
 			<ScrollView>
 				<View className='relative'>
 					<Image
@@ -42,8 +54,7 @@ const RestaurantScreen = ({ route, navigation }) => {
 								<Text className='text-xs'>
 									<Text className='text-green-700'>{restaurant.stars}</Text>
 									<Text className='text-gray-700'>
-										({restaurant.reviews} review) -{' '}
-										<Text className='font-semibold'>{restaurant?.category}</Text>
+										({restaurant.reviews} review) - <Text className='font-semibold'>{restaurant?.category}</Text>
 									</Text>
 								</Text>
 							</View>
@@ -65,7 +76,7 @@ const RestaurantScreen = ({ route, navigation }) => {
 					{restaurant.dishes.map((dish, index) => (
 						<DishRow
 							key={index}
-							restaurant={dish}
+							item={dish}
 						/>
 					))}
 				</View>
